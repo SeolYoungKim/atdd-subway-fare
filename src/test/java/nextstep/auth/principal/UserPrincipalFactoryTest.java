@@ -12,4 +12,5 @@ class UserPrincipalFactoryTest {
         userPrincipalFactory = new UserPrincipalFactory(new MockTokenProvider());
     }
 
+
 }

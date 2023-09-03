@@ -5,16 +5,16 @@ import nextstep.auth.token.TokenProvider;
 public class MockTokenProvider implements TokenProvider {
     @Override
     public String createToken(String principal, String role) {
-        return null;
+        return "token";
     }
 
     @Override
     public String getPrincipal(String token) {
-        return null;
+        return "principal";
     }
 
     @Override
     public String getRoles(String token) {
-        return null;
+        return "role";
     }
 }
