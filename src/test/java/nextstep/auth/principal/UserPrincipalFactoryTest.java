@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -18,7 +19,7 @@ class UserPrincipalFactoryTest {
         userPrincipalFactory = new UserPrincipalFactory(new MockTokenProvider());
     }
 
-    @DisplayName("로그인 유저의 UserPrincipal 생성")
+    @DisplayName("LoggedInUserPrincipal 생성")
     @ParameterizedTest(name = "isLoginRequired={0}")
     @ValueSource(booleans = {true, false})
     void createLoggedInUser(boolean isLoginRequired) {
@@ -30,5 +31,18 @@ class UserPrincipalFactoryTest {
 
         // then
         assertThat(userPrincipal).isInstanceOf(LoggedInUserPrincipal.class);
+    }
+
+    @DisplayName("isLoginRequired=false 일 경우 UnknownUserPrincipal 생성")
+    @Test
+    void createUnknownUser() {
+        // given
+        AuthorizationHeader authorizationHeader = new AuthorizationHeader(null);
+
+        // when
+        UserPrincipal userPrincipal = userPrincipalFactory.create(authorizationHeader, false);
+
+        // then
+        assertThat(userPrincipal).isInstanceOf(UnknownUserPrincipal.class);
     }
 }
