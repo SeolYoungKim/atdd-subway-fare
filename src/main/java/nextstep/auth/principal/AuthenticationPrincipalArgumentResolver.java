@@ -1,20 +1,18 @@
 package nextstep.auth.principal;
 
-import nextstep.auth.AuthenticationException;
-import nextstep.auth.token.JwtTokenProvider;
+import java.util.Objects;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-import java.util.Objects;
-
 public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArgumentResolver {
-    private JwtTokenProvider jwtTokenProvider;
+    private final UserPrincipalFactory userPrincipalFactory;
 
-    public AuthenticationPrincipalArgumentResolver(JwtTokenProvider jwtTokenProvider) {
-        this.jwtTokenProvider = jwtTokenProvider;
+    public AuthenticationPrincipalArgumentResolver(UserPrincipalFactory userPrincipalFactory) {
+
+        this.userPrincipalFactory = userPrincipalFactory;
     }
 
     @Override
@@ -28,34 +26,8 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
         return createUserPrincipal(webRequest, authenticationPrincipal);
     }
 
-    /**
-     * 해당 메서드의 역할
-     * 1. NativeWebRequest, AuthenticationPrincipal 을 이용하여, 토큰이 있는지 확인한다.
-     *   - 있을 경우, 토큰을 파싱해서 유저 정보를 얻어낸다.
-     *   - 없을 경우, 그에 따른 로직을 수행한다.
-     */
     private UserPrincipal createUserPrincipal(NativeWebRequest webRequest, AuthenticationPrincipal authenticationPrincipal) {
-        AuthorizationHeader authorizationHeader = AuthorizationHeader.of(webRequest);  // 헤더를 얻어낸다
-        if (authorizationHeader.isNull() || authorizationHeader.isNotBearerToken()) {  // 토큰이 있는지 확인한다.
-            checkIsLoginRequired(authenticationPrincipal);  // AuthenticationPrincipal 애노테이션의 required 옵션을 확인한다.
-
-            return new UnknownUserPrincipal();  // 언노운 유저를 만든다.
-        }
-
-        String token = authorizationHeader.getToken();  // 토큰을 얻는다.
-        return createLoggedInUser(token);
-    }
-
-    private void checkIsLoginRequired(AuthenticationPrincipal authenticationPrincipal) {
-        if (authenticationPrincipal.required()) {
-            throw new AuthenticationException();
-        }
-    }
-
-    private LoggedInUserPrincipal createLoggedInUser(String token) {
-        String username = jwtTokenProvider.getPrincipal(token);  // 토큰에서 username을 얻는다.
-        String role = jwtTokenProvider.getRoles(token);  // 토큰에서 role을 얻는다.
-
-        return new LoggedInUserPrincipal(username, role);  // 로그인된 유저 객체를 만든다.
+        AuthorizationHeader authorizationHeader = AuthorizationHeader.of(webRequest);
+        return userPrincipalFactory.create(authorizationHeader, authenticationPrincipal);
     }
 }
