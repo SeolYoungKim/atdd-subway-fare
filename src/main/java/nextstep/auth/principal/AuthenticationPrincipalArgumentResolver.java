@@ -8,10 +8,11 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArgumentResolver {
+    private static final String AUTHORIZATION = "Authorization";
+
     private final UserPrincipalFactory userPrincipalFactory;
 
     public AuthenticationPrincipalArgumentResolver(UserPrincipalFactory userPrincipalFactory) {
-
         this.userPrincipalFactory = userPrincipalFactory;
     }
 
@@ -23,7 +24,7 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         AuthenticationPrincipal authenticationPrincipal = Objects.requireNonNull(parameter.getParameterAnnotation(AuthenticationPrincipal.class));
-        AuthorizationHeader authorizationHeader = AuthorizationHeader.of(webRequest);
+        AuthorizationHeader authorizationHeader = new AuthorizationHeader(webRequest.getHeader(AUTHORIZATION));
 
         return userPrincipalFactory.create(authorizationHeader, authenticationPrincipal);
     }
