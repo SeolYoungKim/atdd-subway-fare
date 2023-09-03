@@ -26,7 +26,7 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
         AuthenticationPrincipal authenticationPrincipal = Objects.requireNonNull(parameter.getParameterAnnotation(AuthenticationPrincipal.class));
         AuthorizationHeader authorizationHeader = new AuthorizationHeader(webRequest.getHeader(AUTHORIZATION));
 
-        return userPrincipalFactory.create(authorizationHeader, authenticationPrincipal);
+        return userPrincipalFactory.create(authorizationHeader, authenticationPrincipal.required());
     }
 
 }

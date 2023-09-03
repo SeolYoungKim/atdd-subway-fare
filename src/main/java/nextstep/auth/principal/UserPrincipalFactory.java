@@ -12,9 +12,9 @@ public class UserPrincipalFactory {
         this.tokenProvider = tokenProvider;
     }
 
-    public UserPrincipal create(AuthorizationHeader authorizationHeader, AuthenticationPrincipal authenticationPrincipal) {
+    public UserPrincipal create(AuthorizationHeader authorizationHeader, boolean isLoginRequired) {
         if (authorizationHeader.isNull() || authorizationHeader.isNotBearerToken()) {
-            checkIsLoginRequired(authenticationPrincipal);
+            checkIsLoginRequired(isLoginRequired);
 
             return new UnknownUserPrincipal();
         }
@@ -23,8 +23,8 @@ public class UserPrincipalFactory {
         return createLoggedInUser(token);
     }
 
-    private void checkIsLoginRequired(AuthenticationPrincipal authenticationPrincipal) {
-        if (authenticationPrincipal.required()) {
+    private void checkIsLoginRequired(boolean isLoginRequired) {
+        if (isLoginRequired) {
             throw new AuthenticationException();
         }
     }
