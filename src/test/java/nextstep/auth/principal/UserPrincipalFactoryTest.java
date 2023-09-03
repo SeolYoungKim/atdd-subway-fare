@@ -1,8 +1,5 @@
 package nextstep.auth.principal;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import nextstep.auth.token.JwtTokenProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 
@@ -12,7 +9,7 @@ class UserPrincipalFactoryTest {
 
     @BeforeEach
     void setUp() {
-        userPrincipalFactory = new UserPrincipalFactory(new JwtTokenProvider());
+        userPrincipalFactory = new UserPrincipalFactory(new MockTokenProvider());
     }
 
 }

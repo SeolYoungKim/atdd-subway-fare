@@ -1,15 +1,15 @@
 package nextstep.auth.principal;
 
 import nextstep.auth.AuthenticationException;
-import nextstep.auth.token.JwtTokenProvider;
+import nextstep.auth.token.TokenProvider;
 import org.springframework.stereotype.Component;
 
 @Component
 public class UserPrincipalFactory {
-    private final JwtTokenProvider jwtTokenProvider;
+    private final TokenProvider tokenProvider;
 
-    public UserPrincipalFactory(JwtTokenProvider jwtTokenProvider) {
-        this.jwtTokenProvider = jwtTokenProvider;
+    public UserPrincipalFactory(TokenProvider tokenProvider) {
+        this.tokenProvider = tokenProvider;
     }
 
     public UserPrincipal create(AuthorizationHeader authorizationHeader, AuthenticationPrincipal authenticationPrincipal) {
@@ -30,8 +30,8 @@ public class UserPrincipalFactory {
     }
 
     private LoggedInUserPrincipal createLoggedInUser(String token) {
-        String username = jwtTokenProvider.getPrincipal(token);
-        String role = jwtTokenProvider.getRoles(token);
+        String username = tokenProvider.getPrincipal(token);
+        String role = tokenProvider.getRoles(token);
 
         return new LoggedInUserPrincipal(username, role);
     }
