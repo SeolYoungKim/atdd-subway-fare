@@ -35,14 +35,14 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
      *   - 없을 경우, 그에 따른 로직을 수행한다.
      */
     private UserPrincipal createUserPrincipal(NativeWebRequest webRequest, AuthenticationPrincipal authenticationPrincipal) {
-        String authorization = webRequest.getHeader("Authorization");  // 헤더를 얻어낸다
-        if (authorization == null || !"bearer".equalsIgnoreCase(authorization.split(" ")[0])) {  // 토큰이 있는지 확인한다.
+        AuthorizationHeader authorizationHeader = AuthorizationHeader.of(webRequest);  // 헤더를 얻어낸다
+        if (authorizationHeader.isNull() || authorizationHeader.isNotBearerToken()) {  // 토큰이 있는지 확인한다.
             checkIsLoginRequired(authenticationPrincipal);  // AuthenticationPrincipal 애노테이션의 required 옵션을 확인한다.
 
             return new UnknownUserPrincipal();  // 언노운 유저를 만든다.
         }
 
-        String token = authorization.split(" ")[1];  // 토큰을 얻는다.
+        String token = authorizationHeader.getToken();  // 토큰을 얻는다.
         return createLoggedInUser(token);
     }
 
