@@ -1,7 +1,9 @@
 package nextstep.auth.principal;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import nextstep.auth.AuthenticationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,7 +35,7 @@ class UserPrincipalFactoryTest {
         assertThat(userPrincipal).isInstanceOf(LoggedInUserPrincipal.class);
     }
 
-    @DisplayName("isLoginRequired=false 일 경우 UnknownUserPrincipal 생성")
+    @DisplayName("authorization header 값이 없고, isLoginRequired=false 일 경우 UnknownUserPrincipal 생성")
     @Test
     void createUnknownUser() {
         // given
@@ -44,5 +46,16 @@ class UserPrincipalFactoryTest {
 
         // then
         assertThat(userPrincipal).isInstanceOf(UnknownUserPrincipal.class);
+    }
+
+    @DisplayName("authorization header 값이 없고, isLoginRequired=true 일 경우 예외 발생")
+    @Test
+    void isLoginFalseAndThrowException() {
+        // given
+        AuthorizationHeader authorizationHeader = new AuthorizationHeader(null);
+
+        // when, then
+        assertThatThrownBy(() -> userPrincipalFactory.create(authorizationHeader, true))
+                .isInstanceOf(AuthenticationException.class);
     }
 }
