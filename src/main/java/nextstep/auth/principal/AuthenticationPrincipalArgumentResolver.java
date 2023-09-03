@@ -28,15 +28,21 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
         return createUserPrincipal(webRequest, authenticationPrincipal);
     }
 
+    /**
+     * 해당 메서드의 역할
+     * 1. NativeWebRequest, AuthenticationPrincipal 을 이용하여, 토큰이 있는지 확인한다.
+     *   - 있을 경우, 토큰을 파싱해서 유저 정보를 얻어낸다.
+     *   - 없을 경우, 그에 따른 로직을 수행한다.
+     */
     private UserPrincipal createUserPrincipal(NativeWebRequest webRequest, AuthenticationPrincipal authenticationPrincipal) {
-        String authorization = webRequest.getHeader("Authorization");
-        if (authorization == null || !"bearer".equalsIgnoreCase(authorization.split(" ")[0])) {
-            checkIsLoginRequired(authenticationPrincipal);
+        String authorization = webRequest.getHeader("Authorization");  // 헤더를 얻어낸다
+        if (authorization == null || !"bearer".equalsIgnoreCase(authorization.split(" ")[0])) {  // 토큰이 있는지 확인한다.
+            checkIsLoginRequired(authenticationPrincipal);  // AuthenticationPrincipal 애노테이션의 required 옵션을 확인한다.
 
-            return new UnknownUserPrincipal();
+            return new UnknownUserPrincipal();  // 언노운 유저를 만든다.
         }
 
-        String token = authorization.split(" ")[1];
+        String token = authorization.split(" ")[1];  // 토큰을 얻는다.
         return createLoggedInUser(token);
     }
 
@@ -47,9 +53,9 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
     }
 
     private LoggedInUserPrincipal createLoggedInUser(String token) {
-        String username = jwtTokenProvider.getPrincipal(token);
-        String role = jwtTokenProvider.getRoles(token);
+        String username = jwtTokenProvider.getPrincipal(token);  // 토큰에서 username을 얻는다.
+        String role = jwtTokenProvider.getRoles(token);  // 토큰에서 role을 얻는다.
 
-        return new LoggedInUserPrincipal(username, role);
+        return new LoggedInUserPrincipal(username, role);  // 로그인된 유저 객체를 만든다.
     }
 }
