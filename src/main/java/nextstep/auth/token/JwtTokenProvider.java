@@ -7,12 +7,13 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 
 @Component
-public class JwtTokenProvider {
+public class JwtTokenProvider implements TokenProvider {
     @Value("${security.jwt.token.secret-key}")
     private String secretKey;
     @Value("${security.jwt.token.expire-length}")
     private long validityInMilliseconds;
 
+    @Override
     public String createToken(String principal, String role) {
         Claims claims = Jwts.claims().setSubject(principal);
         Date now = new Date();
@@ -27,6 +28,7 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    @Override
     public String getPrincipal(String token) {
         try {
             return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
@@ -35,6 +37,7 @@ public class JwtTokenProvider {
         }
     }
 
+    @Override
     public String getRoles(String token) {
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().get("role", String.class);
     }
