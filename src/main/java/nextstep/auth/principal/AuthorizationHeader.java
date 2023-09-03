@@ -4,6 +4,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 
 public class AuthorizationHeader {
     private static final String AUTHORIZATION = "Authorization";
+    private static final String TOKEN_TYPE_BEARER = "bearer";
 
     private final String authorization;
 
@@ -21,7 +22,7 @@ public class AuthorizationHeader {
     }
 
     public boolean isNotBearerToken() {
-        return !"bearer".equalsIgnoreCase(authorization.split(" ")[0]);
+        return !TOKEN_TYPE_BEARER.equalsIgnoreCase(authorization.split(" ")[0]);
     }
 
     public String getToken() {
