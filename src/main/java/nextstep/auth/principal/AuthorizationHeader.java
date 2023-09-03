@@ -16,7 +16,6 @@ public class AuthorizationHeader {
         this.authorization = authorization;
     }
 
-
     public boolean isNull() {
         return authorization == null;
     }
