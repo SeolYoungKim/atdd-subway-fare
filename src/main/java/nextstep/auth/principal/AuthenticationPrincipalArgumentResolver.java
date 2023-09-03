@@ -23,11 +23,9 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         AuthenticationPrincipal authenticationPrincipal = Objects.requireNonNull(parameter.getParameterAnnotation(AuthenticationPrincipal.class));
-        return createUserPrincipal(webRequest, authenticationPrincipal);
-    }
-
-    private UserPrincipal createUserPrincipal(NativeWebRequest webRequest, AuthenticationPrincipal authenticationPrincipal) {
         AuthorizationHeader authorizationHeader = AuthorizationHeader.of(webRequest);
+
         return userPrincipalFactory.create(authorizationHeader, authenticationPrincipal);
     }
+
 }
